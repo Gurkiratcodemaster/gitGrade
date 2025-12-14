@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from analyzer import analyze_repo
+from analyzer import analyze_repo, RepoAnalysisError
 from scorer import score_repo
 from roadmap import generate_ai_feedback
 from pathlib import Path
@@ -41,9 +41,14 @@ def serve_frontend():
 # -----------------------------
 @app.post("/analyze")
 def analyze_repository(data: RepoRequest):
-    repo_data = analyze_repo(data.repo_url)
-    score, improvements = score_repo(repo_data)
-    ai_feedback = generate_ai_feedback(score, repo_data, improvements)
+    try:
+        repo_data = analyze_repo(data.repo_url)
+        score, improvements = score_repo(repo_data)
+        ai_feedback = generate_ai_feedback(score, repo_data, improvements)
+    except RepoAnalysisError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:  # Catch-all to avoid leaking stack traces
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {exc}")
 
     return {
         "score": score,

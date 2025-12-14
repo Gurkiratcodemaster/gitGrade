@@ -47,7 +47,7 @@ async function analyze() {
   document.getElementById("result").innerHTML = "⏳ Analyzing...";
 
   try {
-    const res = await fetch("http://localhost:8000/analyze", {
+    const res = await fetch("/analyze", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ repo_url: repo })
