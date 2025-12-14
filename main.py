@@ -47,7 +47,7 @@ def analyze_repository(data: RepoRequest):
         ai_feedback = generate_ai_feedback(score, repo_data, improvements)
     except RepoAnalysisError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
-    except Exception as exc:  # Catch-all to avoid leaking stack traces
+    except Exception as exc:  # Catch-all
         raise HTTPException(status_code=500, detail=f"Unexpected error: {exc}")
 
     return {
