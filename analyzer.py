@@ -6,11 +6,15 @@ def analyze_repo(repo_url):
     api = f"https://api.github.com/repos/{owner}/{repo}"
 
     repo_data = requests.get(api).json()
-    contents = requests.get(api + "/contents").json()
-    commits = requests.get(api + "/commits").json()
+    contents_resp = requests.get(api + "/contents").json()
+    commits_resp = requests.get(api + "/commits").json()
     languages = requests.get(api + "/languages").json()
 
-    files = [item["name"] for item in contents]
+    # Handle API responses safely
+    contents = contents_resp if isinstance(contents_resp, list) else []
+    commits = commits_resp if isinstance(commits_resp, list) else []
+    
+    files = [item["name"] for item in contents if isinstance(item, dict)]
 
     return {
         "name": repo,

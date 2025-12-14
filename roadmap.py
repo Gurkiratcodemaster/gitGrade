@@ -1,10 +1,17 @@
 # roadmap.py
 import os
+from dotenv import load_dotenv
 from mistralai import Mistral
 
+load_dotenv()
+
 def generate_ai_feedback(score, repo_data, improvements):
+    api_key = os.getenv("MISTRAL_API_KEY")
+    if not api_key:
+        return "⚠️ Mistral API key not configured. Please set MISTRAL_API_KEY environment variable."
+    
     client = Mistral(
-        api_key=os.getenv("MISTRAL_API_KEY")
+        api_key=api_key
     )
 
     prompt = f"""
